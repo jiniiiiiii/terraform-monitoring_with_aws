@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo tee /etc/promtail/config.yml<<FIN
+sudo tee /etc/promtail/config.yml <<'PROMTAIL_CONF'
 
 # 1. Promtail 자체의 모니터링 포트
 server:
@@ -36,4 +36,4 @@ scrape_configs:
         labels:
           job: ssh_system
           __path__: /var/log/messages
-FIN
+PROMTAIL_CONF

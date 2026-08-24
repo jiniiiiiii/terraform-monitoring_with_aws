@@ -30,3 +30,6 @@ crash.log
 .idea/
 .vscode/
 .venv/
+
+# aws-env 금지 
+aws-env.sh

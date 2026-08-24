@@ -33,6 +33,9 @@ location /api/ {
 }
 FIN
 
+# 기존 log_format main의 끝에 $request_time과 $upstream_response_time(WAS 응답시간)을 추가
+sudo sed -i 's/"\$http_x_forwarded_for"/"\$http_x_forwarded_for" \$request_time \$upstream_response_time/g' /etc/nginx/nginx.conf
+
 systemctl restart nginx
 
 cat <<FIN > /home/ec2-user/restart-nginx.sh

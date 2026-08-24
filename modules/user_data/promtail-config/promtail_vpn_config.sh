@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo tee /etc/promtail/config.yml<<FIN
+sudo tee /etc/promtail/config.yml <<'PROMTAIL_CONF'
 
 # 1. Promtail 자체의 모니터링 포트
 server:
@@ -16,7 +16,7 @@ clients:
   #- url: http://localhost:3100/loki/api/v1/push # Loki의 로그 수신 API endpoint
   # --> Promtail이 웹 서버 자기 자신에게 로그를 전송하려 하기 때문에 전송 실패(Connection Refused)가 발생
   # url은 실제 모니터링 서버의 private ip로 지정행야 함.
-  - url: http://10.0.2.100:3100/loki/api/v1/push # 모니터링 서버 sg의 3100번 포트 열려있ㅇ어야 함. 다른 서버에서 받아와야 하니까.
+  - url: http://10.0.2.100:3100/loki/api/v1/push # 모니터링 서버 sg의 3100번 포일러있ㅇ어야 함. 다른 서버에서 받아와야 하니까.
 
 # 4. 어떤 로그 파일을 어떻게 긁어올지(Scrape) 정의
 scrape_configs:
@@ -36,4 +36,4 @@ scrape_configs:
         labels:
           job: vpn_system
           __path__: /var/log/messages
-FIN
+PROMTAIL_CONF

@@ -23,9 +23,9 @@ sudo mkdir -p /etc/prometheus
 #sudo cp prometheus.yml /etc/prometheus/ # ==> 기본 파일 사용 할 때
 
 # 3. config.yml 파일 생성
-sudo tee /etc/prometheus/user-prometheus.yml <<'FIN'
+sudo tee /etc/prometheus/user-prometheus.yml <<'PROMETHEUS_CONF'
 ${prometheus_setting}
-FIN
+PROMETHEUS_CONF
 
 
 
@@ -99,7 +99,7 @@ exit 1
 fi
 
 # 5. dashboard.yml 설정파일 생성
-sudo tee /etc/grafana/provisioning/dashboards/dashboard.yaml<<FIN
+sudo tee /etc/grafana/provisioning/dashboards/dashboard.yaml <<'GRAFANA_DASHBOARD'
 apiVersion: 1
 
 providers:
@@ -115,10 +115,10 @@ providers:
     
     # 재시작 안해도 json 변경시 dashboadr 갱신
     updateIntervalSeconds: 10
-FIN
+GRAFANA_DASHBOARD
 
 # 6. DataSource.yml 생성
-sudo tee /etc/grafana/provisioning/datasources/prometheus-loki.yaml<<FIN
+sudo tee /etc/grafana/provisioning/datasources/prometheus-loki.yaml <<'GRAFANA_DATASOURCE'
 apiVersion: 1
 
 datasources:
@@ -136,7 +136,7 @@ datasources:
     url: http://localhost:3100
     jsonData:
       maxLines: 1000  #grafana탐색 화면에서 한 번에 가져올 최대 로그 라인 수
-FIN
+GRAFANA_DATASOURCE
 
 # 7. 실행 등록
 sudo systemctl enable --now grafana-server

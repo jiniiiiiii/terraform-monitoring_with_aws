@@ -56,7 +56,7 @@ resource "aws_instance" "ec2" {
   # 목적지/소스 설정 해제 . defualt = true
   source_dest_check = var.source_dest_check_bool
 
-  user_data = templatefile(
+  user_data = replace(templatefile(
     "${path.root}/modules/user_data/${var.user_data_file}", # 파일명을 변수로 동적으로 가져옴. 
     {
       # 파일명에 따라서 알아서 변수 주입. 즉, tpl에 해당 변수가 없어도 ㄱㅊ
@@ -76,7 +76,7 @@ resource "aws_instance" "ec2" {
     # dashboard_web_json = file("${path.root}/userdata/grafana/dashboard-web.json")
     # dashboard_all_json = file("${path.root}/userdata/grafana/dashboard-all.json")
     }  
-    )
+    ), "\r\n", "\n")
   
   # user_data 변경 시 인스턴스 부수고 재생성
   user_data_replace_on_change = true

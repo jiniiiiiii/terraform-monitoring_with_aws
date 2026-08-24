@@ -15,7 +15,7 @@ scrape_configs:
     static_configs:
       - targets:
           - localhost:9090
-          - localhost:9100 #모니터링 서버의 하드웨어 정보도 수집하려면 ㅇ이렇게 설정해야 함.
+          - monitor01.dev.internal:9100 #localhost:9100 #모니터링 서버의 하드웨어 정보도 수집하려면 ㅇ이렇게 설정해야 함.
 
         labels:
           service: monitoring
@@ -28,9 +28,9 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets:
-          - 10.0.1.10:9100
-          - 10.0.1.11:9100
-          - 10.0.2.10:9100
+          - web01.dev.internal #10.0.1.10:9100
+          - web02.dev.internal #10.0.1.11:9100
+          - web03.dev.internal #10.0.2.10:9100
 
         labels: # static 밖에 있으면 안됨.
           service: web

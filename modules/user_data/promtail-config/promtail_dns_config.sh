@@ -31,7 +31,7 @@ sudo setfacl -R -d -m u:promtail:rx /var/log/named
 # ================================================
 # 파일 생성
 # ================================================
-sudo tee /etc/promtail/config.yml<<FIN
+sudo tee /etc/promtail/config.yml <<'PROMTAIL_CONF'
 # 1. Promtail 자체의 모니터링 포트
 server:
   http_listen_port: 9080 # Promtail의 상태를 체크할 수 있는 포트
@@ -66,7 +66,7 @@ scrape_configs:
       #   labels:
       #     job: dns_system
       #     __path__: /var/log/messages
-FIN
+PROMTAIL_CONF
 
 
 # 5. 데몬 재시작
