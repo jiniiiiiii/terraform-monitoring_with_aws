@@ -1,0 +1,10 @@
+$TTL 3H
+@       IN SOA  @ dev.internal. (
+                                        0       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+        NS      @
+        A       10.0.1.53
+        AAAA    ::1

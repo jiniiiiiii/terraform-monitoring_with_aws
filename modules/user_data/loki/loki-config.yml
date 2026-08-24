@@ -1,0 +1,117 @@
+# 1. 인증 기능 끌 것인가?
+auth_enabled: false
+# 여러 사용자/조직(Multi-tenant) 구분이 필요 없으면 false로 둡니다. (개인/단일 서버용 필수 설정)
+
+# 2. Loki가 문을 열어둘 포트(Port) 설정
+server:
+  http_listen_port: 3100 # Grafana나 Promtail이 접속할 기본 HTTP 포트
+  grpc_listen_port: 9096 # Loki 내부 프로세스끼리 빠르게 통신할 때 쓰는 포트
+
+# 3. 공통 저장소 경로 및 클러스터 설정
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /tmp/loki # Loki가 사용할 임시/기본 데이터 폴더 --> 재부팅시에는 유실 가능.
+  storage:
+    filesystem:
+      chunks_directory: /tmp/loki/chunks # 실제 압축된 로그 데이터가 저장되는 폴더
+      rules_directory: /tmp/loki/rules # 알람(Alert) 규칙 파일 저장 폴더
+  replication_factor: 1 # 복제본 개수 (단일 서버라 1개만 저장)
+  ring:
+    kvstore:
+      store: inmemory # 클러스터 정보를 메모리에 저장 (단일 서버용)
+
+# 4. 로그를 어떻게 인덱싱(목차화)해서 저장할 것인가?
+schema_config:
+  configs:
+    - from: 2020-05-15 # 이 설정이 적용될 시작 날짜
+      store: tsdb # 인덱스(목차) 저장방식 (최신 Loki 표준인 TSDB 사용)/var/lib/loki
+      object_store: filesystem # 본문 데이터 저장소 방식 (로컬 파일시스템 사용)
+      schema: v13 # Loki 스키마 버전
+      index:
+        prefix: index_ # 생성될 인덱스 파일명의 접두사
+        period: 24h # 인덱스 파일을 24시간(하루) 단위로 쪼개서 저장
+
+# 5. 로그 기반 알람 설정
+ruler:
+  alertmanager_url: http://localhost:9093 # 특정 로그 발생 시 경고를 보낼 Alertmanager 주소
+
+
+# 6. log 저장소로 s3 이용할 경우
+# storage_config:
+#   aws:
+#     s3: s3://ap-northeast-2/내-로키-버킷-이름 # 본인 리전 및 버킷 이름
+#     s3forcepathstyle: true
+
+# 7. 로그 보관 시간
+# limits_config:
+#   metric_aggregation_enabled: true
+#   enable_multi_variant_queries: true
+#   retention_period: 168h # 7일 (24시간 * 7) 보관
+
+#============================
+# 원본
+#============================
+# auth_enabled: false
+
+# server:
+#   http_listen_port: 3100
+#   grpc_listen_port: 9096
+#   log_level: debug
+#   grpc_server_max_concurrent_streams: 1000
+
+# common:
+#   instance_addr: 127.0.0.1
+#   path_prefix: /tmp/loki
+#   storage:
+#     filesystem:
+#       chunks_directory: /tmp/loki/chunks
+#       rules_directory: /tmp/loki/rules
+#   replication_factor: 1
+#   ring:
+#     kvstore:
+#       store: inmemory
+
+# query_range:
+#   results_cache:
+#     cache:
+#       embedded_cache:
+#         enabled: true
+#         max_size_mb: 100
+
+# limits_config:
+#   metric_aggregation_enabled: true
+#   enable_multi_variant_queries: true
+
+# schema_config:
+#   configs:
+#     - from: 2020-10-24
+#       store: tsdb
+#       object_store: filesystem
+#       schema: v13
+#       index:
+#         prefix: index_
+#         period: 24h
+
+# pattern_ingester:
+#   enabled: true
+#   metric_aggregation:
+#     loki_address: localhost:3100
+
+# ruler:
+#   alertmanager_url: http://localhost:9093
+
+# frontend:
+#   encoding: protobuf
+
+# # By default, Loki will send anonymous, but uniquely-identifiable usage and configuration
+# # analytics to Grafana Labs. These statistics are sent to https://stats.grafana.org/
+# #
+# # Statistics help us better understand how Loki is used, and they show us performance
+# # levels for most users. This helps us prioritize features and documentation.
+# # For more information on what's sent, look at
+# # https://github.com/grafana/loki/blob/main/pkg/analytics/stats.go
+# # Refer to the buildReport method to see what goes into a report.
+# #
+# # If you would like to disable reporting, uncomment the following lines:
+# #analytics:
+# #  reporting_enabled: false

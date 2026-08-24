@@ -1,0 +1,15 @@
+apiVersion: 1
+
+providers:
+  - name: "default"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    editable: true
+
+    options:
+      path: /var/lib/grafana/dashboards
+
+    # 재시작 안해도 json 변경시 dashboadr 갱신
+    updateIntervalSeconds: 10

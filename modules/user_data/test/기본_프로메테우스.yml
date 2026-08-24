@@ -1,0 +1,44 @@
+# my global config
+# 전체 scrape에 적용되는 기본 값
+global:
+  scrape_interval: 30s # 메트릭 수집 주기. Set the scrape interval to every 30 seconds. Default is every 1 minute.
+  # --> job마다 다르게 줄 수 있음.
+  scrape_timeout: 30s # is set to the global default (10s). interval보다 작게
+
+  evaluation_interval: 30s # Alert Rule 평가 주기. Evaluate rules every 15 seconds. The default is every 1 minute.
+  #external_labels: #ㅇ여러 promethus를 구분할 때  --> Alertmanager나 Thanos를 사용할 때 필수적
+  #cluster: pod
+  #region: ap-northeast-2
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+  # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+  # A scrape configuration containing exactly one endpoint to scrape:
+  # Here it's Prometheus itself.
+  # ★ 제일 중요
+  scrape_configs:
+    # 옵션 참고 : https://yjkim97.tistory.com/51
+    # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+    - job_name: "prometheus"
+      # - job_name: node-exporter 등등 많이 씀.
+      # metrics_path defaults to '/metrics'
+      # scheme defaults to 'http'.    #https를 사용할 경우 scheme: https 로 가능
+
+      static_configs:
+        - targets: ["localhost:9090", "10.0.1.249:9100"] # 추적할 대상 추가
+          # 이걸 위해선 private_ip를 고정으로 생성할 필요가 있을 듯
+          # The label name is added as a label `label_name=<label_value>` to any timeseries scraped from this config.
+          labels: # 추가 라벨을 붙임  --> grafana에서 env="dev"처럼 필터링해서 사용 가능
+            app: "prometheus"
+            env: dev
+            team: backend
+            service: payment

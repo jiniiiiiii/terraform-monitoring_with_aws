@@ -1,0 +1,32 @@
+# 1. 테라폼 초기화 및 플러그인 디렉토리 (용량이 크고 로컬에서 자동 생성됨)
+.terraform/
+.terraform.lock.hcl
+
+# 2. 테라폼 상태 파일 (민감한 보안 정보가 평문으로 기록되어 절대 올리면 안 됨)
+*.tfstate
+*.tfstate.*
+
+# 3. 변수 정의 파일 (보통 비밀번호, API 토큰 등이 들어가므로 제외)
+*.tfvars
+*.tfvars.json
+dev.tfvars
+
+# 4. SSH 키 및 자격 증명 (비밀키, AWS 인증 키 등)
+*.pem
+*.csv
+*key.pem
+terraform-key.pem
+terraform-user_accessKeys.csv
+*.key
+key/*
+
+# 5. 실행 계획 및 로그 파일 (민감 정보 노출 우려)
+plan.txt
+*.log
+crash.log
+
+# 6. 기타 로컬 설정 및 환경 변수 파일
+.env
+.idea/
+.vscode/
+.venv/

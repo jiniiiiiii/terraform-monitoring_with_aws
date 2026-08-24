@@ -1,0 +1,62 @@
+global:
+  scrape_interval: 15s #메트릭 검색 주기
+  evaluation_interval: 15s # 이건 뭐지
+  scrape_timeout: 10s
+
+  external_labels:
+    env: dev
+    region: ap-northeast-3
+
+scrape_configs:
+  #############################
+  # prometheus
+  #############################
+  - job_name: monitoring
+    static_configs:
+      - targets:
+          - localhost:9090
+          - localhost:9100 #모니터링 서버의 하드웨어 정보도 수집하려면 ㅇ이렇게 설정해야 함.
+
+        labels:
+          service: monitoring
+          team: infra
+
+  #############################
+  # web
+  #############################
+  - job_name: nginx
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - 10.0.1.10:9100
+          - 10.0.1.11:9100
+          - 10.0.2.10:9100
+
+        labels: # static 밖에 있으면 안됨.
+          service: web
+          team: infra
+
+  #############################
+  # named (DNS)
+  #############################
+  - job_name: internal_dns
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - 10.0.1.53:9100
+
+        labels:
+          service: internal_dns
+          team: infra
+  #############################
+  # VPN
+  #############################
+  - job_name: vpn
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - 10.0.2.200:9100
+
+        labels:
+          service: vpn
+          team: secure

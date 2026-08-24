@@ -1,0 +1,29 @@
+resource "aws_instance" "test-ec2" {
+  ami               = data.aws_ami.amazon_linux.id
+  instance_type     = var.instance_type
+
+  # * IAM 인스턴스 profile 연결
+  iam_instance_profile = var.ec2-profile
+
+  #네트워크 정의
+  subnet_id                  = var.subnet_id
+  vpc_security_group_ids     = var.security_group_id
+
+  #key
+  key_name             = "terraform-key"
+
+  # public ip 할당 ? 
+  associate_public_ip_address = true
+  
+  # 람다가 먼저 선언되어야 하므로 의존성 추가
+  depends_on = [ var.api-lambda-url ]
+
+  # 스크립트 부분 templatefile(path, vars)
+  # templatefile("경로", { 템플릿에서_쓸_이름 = 테라폼의_실제_변수 })
+  # 파일 main.tf에 적힌거 동적으로 가져오기 : "${path.root}/modules/user_data/${var.user_data_file}"
+  user_data = templatefile("${path.root}/modules/user_data/test.tpl", {
+    lambda_url = var.api-lambda-url   # 템플릿에서 쓸 변수 'lambda_url'에 실제 값 주입
+  })
+
+
+}
