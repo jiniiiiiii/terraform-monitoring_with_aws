@@ -54,13 +54,14 @@ dns01           IN      A       10.0.1.53
                                                                                    
 web01           IN      A       10.0.1.10                                          
 web02           IN      A       10.0.1.11                                          
-web03           IN      A       10.0.2.10                                          
-                                                                                   
-monitor01       IN      A       10.0.2.200                                         
-                                                                                   
-backup          IN      A       10.0.2.222  
-FIN
+web03           IN      A       10.0.2.10
 
+vpn01           IN      A       10.0.2.200
+                                                                                   
+monitor01       IN      A       10.0.2.100                                         
+                                                                                   
+backup01        IN      A       10.100.0.2  
+FIN
 
 # 4 zone 파일 생성 (2)rev
 echo '$TTL 3H' | sudo tee /var/named/10.0.1.rev
@@ -89,16 +90,27 @@ sudo tee -a /var/named/10.0.2.rev<<FIN
 
         IN      NS      dns01.dev.internal.
 10      IN      PTR     web03.dev.internal.
-200     IN      PTR     monitor01.dev.internal.
+100     IN      PTR     monitor01.dev.internal.
+200     IN      PTR     vpn01.dev.internal.
 FIN
 
+echo '$TTL 3H' | sudo tee /var/named/10.100.0.rev
+sudo tee -a /var/named/10.0.1.rev<<FIN
+@       IN SOA dns01.dev.internal. admin.dev.internal. (
+                                        0       ; serial
+                                        1D      ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
 
+        IN      NS      dns01.dev.internal.
+1       IN      PTR     vpn01.dev.internal.
+2       IN      PTR     backup01.dev.internal.
+FIN
 
 # 5. 서비스 가동 
 sudo named-checkconf /etc/named.conf
 sudo systemctl enable --now named
-
-
 
 # =========================================
 # END. 내부 DNS 등록

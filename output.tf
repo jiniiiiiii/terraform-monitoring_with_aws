@@ -27,3 +27,9 @@ output "alb_url" {
   description = "URL of load balancer"
   value       = "http://${aws_alb.public_alb.dns_name}/"
 }
+
+
+output "monitor_url" {
+  description = "URL of MONITOR URL"
+  value       = "http://${module.ec2_mornitoring.public_ip}:3000"
+}

@@ -55,6 +55,23 @@ chown ec2-user:ec2-user /home/ec2-user/restart-nginx.sh
 # nginx 시작
 sudo systemctl enable --now nginx
 
+# 부하테스트 도구 설치
+sudo dnf install stress-ng -y 
+
+#===========================================
+# 트래픽 테스트용 스크립트
+# =========================================
+sudo -u ec2-user tee /home/ec2-user/traffic.sh << 'EOF'
+#!/bin/bash
+while true; do
+  curl -s -o /dev/null http://localhost/
+  curl -s -o /dev/null http://localhost/
+  curl -s -o /dev/null http://localhost/not-found
+  sleep 0.2
+done
+EOF
+
+sudo chmod +x /home/ec2-user/traffic.sh
 
 # =========================================
 # END. 내부 DNS 등록

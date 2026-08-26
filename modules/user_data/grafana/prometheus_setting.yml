@@ -28,9 +28,9 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets:
-          - web01.dev.internal #10.0.1.10:9100
-          - web02.dev.internal #10.0.1.11:9100
-          - web03.dev.internal #10.0.2.10:9100
+          - web01.dev.internal:9100 #10.0.1.10:9100
+          - web02.dev.internal:9100 #10.0.1.11:9100
+          - web03.dev.internal:9100 #10.0.2.10:9100
 
         labels: # static 밖에 있으면 안됨.
           service: web
@@ -43,7 +43,7 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets:
-          - 10.0.1.53:9100
+          - dns01.dev.internal:9100 #10.0.1.53:9100
 
         labels:
           service: internal_dns
@@ -55,7 +55,7 @@ scrape_configs:
     scrape_interval: 15s
     static_configs:
       - targets:
-          - 10.0.2.200:9100
+          - vpn01.dev.internal:9100 #10.0.2.200:9100
 
         labels:
           service: vpn
