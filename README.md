@@ -64,6 +64,7 @@ Dev/
 │   ├── vpc/             # VPC, 서브넷, 라우팅 테이블 구성 모듈
 │   ├── ec2/             # EC2 인스턴스 공통 생성 모듈
 │   └── user_data/       # 인스턴스 초기화 템플릿 (.tpl) 및 Promtail 쉘 스크립트
+├── monitoring_test-scripts/ # 모니터링 및 알람 시스템 검증용 부하/장애 테스트 스크립트
 ├── alb.tf               # Application Load Balancer 및 리스너 설정
 ├── main.tf              # EC2 인스턴스, VPN 라우트 호출 등 메인 인프라 오케스트레이션
 ├── rds.tf               # MySQL RDS 인스턴스 및 서브넷 그룹 설정
@@ -87,6 +88,19 @@ Dev/
 * **`monitor-server.tpl`**: 시스템 전체 모니터링을 위해 Prometheus, Grafana, Loki를 내려받고 systemd 서비스로 등록하여 시작합니다.
 * **`internal-dns-server.tpl`**: Bind9을 이용해 사설 DNS 네임서버를 구성합니다. `dev.internal` 도메인으로 내부 Web 및 Monitoring 서버 IP들을 관리합니다.
 * **`vpn-server.tpl`**: WireGuard VPN 데몬을 기동하고, 트래픽 포워딩(NAT) 설정 및 내부 DNS인 `10.0.1.53`를 바라보도록 환경을 구성합니다.
+
+---
+
+## 🧪 모니터링 검증 및 부하 테스트 스크립트 (`monitoring_test-scripts/`)
+
+`monitoring_test-scripts/` 디렉토리는 Prometheus, Grafana, Loki 등 모니터링 대시보드와 알람(Alert Manager)이 정상 작동하는지 검증하기 위해 인위적으로 부하 및 장애 상황을 발생시키고 메트릭을 기록하는 스크립트 모음입니다.
+
+* **`cpu-load-check_uptime.sh`**: 서버의 `uptime` 및 웹 응답 속도/상태 코드를 지속적으로 캡처하여 로그 파일에 기록합니다.
+* **`cpu-load-test_with-web-traffic.sh`**: 웹 서버로 연속적인 HTTP 요청을 발송하며 응답 시간 및 상태 코드를 기록하는 부하 테스트 스크립트입니다.
+* **`disk-state-record.sh`**: 디스크 용량(`df`), 아이노드(`df -i`), 블록 디바이스(`lsblk`), 상위 사용량 디렉토리(`du`), I/O 성능(`iostat`)을 주기적으로 로그로 남깁니다.
+* **`disk-write-state_check.sh`**: 지속적인 디스크 쓰기 동작을 유발하며 디스크 메트릭 변화 및 상태를 체크합니다.
+* **`memory_make-oom_test.sh`**: `systemd-run`을 통해 메모리 상한을 600MB로 제약한 뒤 Python으로 메모리를 할당하여 강제로 OOM(Out of Memory) 장애 상황을 유발합니다.
+* **`traffic-test_web.sh`**: 로컬 웹 서버에 정상 200 OK 및 404 Not Found 요청 트래픽을 지속적으로 생성합니다.
 
 ---
 

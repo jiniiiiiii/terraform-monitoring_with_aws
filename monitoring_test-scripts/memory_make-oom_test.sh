@@ -1,5 +1,6 @@
+#!/bin/bash
 sudo systemd-run --scope \
-  -p MemoryMax=300M \
+  -p MemoryMax=600M \
   -p MemorySwapMax=0 \
   python3 -c '
 import time
