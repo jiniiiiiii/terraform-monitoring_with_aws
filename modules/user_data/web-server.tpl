@@ -59,19 +59,20 @@ sudo systemctl enable --now nginx
 sudo dnf install stress-ng -y 
 
 #===========================================
-# 트래픽 테스트용 스크립트
+# 모니터링 테스트용 스크립트 git 다운
 # =========================================
-sudo -u ec2-user tee /home/ec2-user/traffic.sh << 'EOF'
-#!/bin/bash
-while true; do
-  curl -s -o /dev/null http://localhost/
-  curl -s -o /dev/null http://localhost/
-  curl -s -o /dev/null http://localhost/not-found
-  sleep 0.2
-done
-EOF
+sudo dnf install git -y
 
-sudo chmod +x /home/ec2-user/traffic.sh
+# 1. 최신 커밋만 얇게 클론 (복잡한 sparse-checkout 대신 제일 안정적)
+git clone --depth 1 https://github.com/jiniiiiiii/terraform-monitoring_with_aws.git /tmp/repo
+
+# 2. 필요한 디렉토리만 복사 및 정리
+cp -r /tmp/repo/monitoring_test-scripts /home/ec2-user/
+rm -rf /tmp/repo
+
+# 3. 권한 설정
+chown -R ec2-user:ec2-user /home/ec2-user/monitoring_test-scripts
+chmod +x -R /home/ec2-user/monitoring_test-scripts
 
 # =========================================
 # END. 내부 DNS 등록
