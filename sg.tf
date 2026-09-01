@@ -77,7 +77,7 @@ resource "aws_security_group" "front_sg" {
     description         = "node exporter"
   } 
 
-  # icmp용 --> 추후 주석처리 가능. 
+  # vpn대역대 및 내부 서버icmp용 --> 추후 주석처리 가능. 
   ingress {
     from_port           = -1
     to_port             = -1
@@ -94,6 +94,15 @@ resource "aws_security_group" "front_sg" {
     cidr_blocks         = ["10.0.0.0/16"]
     #security_groups     = [ aws_security_group.monitor_sg.id ] #모니터링을 위한 규칙 추가
     description         = "allow icmp from internal server"
+  } 
+
+  ingress {
+    from_port           = 0
+    to_port             = 8888
+    protocol            = "tcp"
+    cidr_blocks         = ["10.0.0.0/16"]
+    #security_groups     = [ aws_security_group.monitor_sg.id ] #모니터링을 위한 규칙 추가
+    description         = "allow internal server traffic for monitoring test"
   } 
   
   

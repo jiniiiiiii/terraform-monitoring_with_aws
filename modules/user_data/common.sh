@@ -6,6 +6,8 @@ dnf update -y
 # 네임서버를 위한 NIC 변수로 지정
 IFACE=$(ip route show default | awk '{print $5}')
 
+# 한국 타임존 설정
+sudo timedatectl set-timezone Asia/Seoul
 
 # ==========================================
 # swap 활성화 
