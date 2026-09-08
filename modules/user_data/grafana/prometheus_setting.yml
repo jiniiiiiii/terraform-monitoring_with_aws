@@ -34,7 +34,7 @@ scrape_configs:
 
         labels: # static 밖에 있으면 안됨.
           service: web
-          team: infra
+          team: service
 
   #############################
   # named (DNS)
@@ -60,3 +60,16 @@ scrape_configs:
         labels:
           service: vpn
           team: secure
+
+  #############################
+  # DB
+  #############################
+  - job_name: db
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - db01.dev.internal:9100 #10.0.2.200:9100
+
+        labels:
+          service: db
+          team: service

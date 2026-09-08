@@ -71,6 +71,7 @@ variable "promtail_conf" {
 #===========================
 variable "api-lambda-url" {
   type        = string
+  default     = ""
   description = "Nginx 템플릿에 주입할 Lambda Function URL"
 }
 
@@ -87,3 +88,25 @@ variable "associate_alb" {
   default     = false # 기본값은 연결하지 않음
   description = "ALB 타겟 그룹에 연결할지 여부"
 }
+
+# DB 설정 변수 (기본값 "" 지정으로 다른 EC2 모듈에서는 선언 생략 가능)
+variable "db_username" {
+  type        = string
+  default     = ""
+  description = "DB 사용자 이름"
+}
+
+variable "db_password" {
+  type        = string
+  default     = ""
+  sensitive   = true
+  description = "DB 비밀번호"
+}
+
+variable "db_name" {
+  type        = string
+  default     = ""
+  description = "DB 이름"
+}
+
+

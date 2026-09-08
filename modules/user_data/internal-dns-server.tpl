@@ -61,6 +61,9 @@ vpn01           IN      A       10.0.2.200
 monitor01       IN      A       10.0.2.100                                         
                                                                                    
 backup01        IN      A       10.100.0.2  
+
+db01            IN      A       10.0.2.33
+bastion01       IN      A       10.0.1.22
 FIN
 
 # 4 zone 파일 생성 (2)rev
@@ -90,6 +93,8 @@ sudo tee -a /var/named/10.0.2.rev<<FIN
 
         IN      NS      dns01.dev.internal.
 10      IN      PTR     web03.dev.internal.
+22      IN      PTR     bastion01.dev.internal
+33      IN      PTR     db01.dev.internal.
 100     IN      PTR     monitor01.dev.internal.
 200     IN      PTR     vpn01.dev.internal.
 FIN

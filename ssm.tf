@@ -3,8 +3,9 @@
 resource "aws_ssm_parameter" "ssm_db_host" {
   name  = "/qbank/db_host"
   type  = "String"
-  value = aws_db_instance.db-instance.address
+  value = module.ec2_db.private_ip
 }
+
 
 resource "aws_ssm_parameter" "ssm_db_user" {
   name  = "/qbank/db_user"

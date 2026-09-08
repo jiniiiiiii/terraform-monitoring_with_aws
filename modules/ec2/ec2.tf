@@ -71,6 +71,10 @@ resource "aws_instance" "ec2" {
       c_pub_key = local.c_pub_key
       promtail_conf = var.promtail_conf
       named_conf = local.named_conf
+      db_user = var.db_username
+      db_password = var.db_password
+      db_name = var.db_name
+
 
     # 대시보드 파일 관련 --> 나중에 s3로 관리할 수도 있음. 근데 이미 용량이 커서;; s3로 업로드
     # dashboard_web_json = file("${path.root}/userdata/grafana/dashboard-web.json")

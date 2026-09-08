@@ -4,6 +4,29 @@
 
 ---
 
+## 📜 인프라 패치노트 (Changelog)
+
+### 📌 [2026-09-08] - 인프라 비용 최적화 & 구조 개편
+* **Database 아키텍처 이전 (RDS → EC2 MySQL)**
+  * **기존**: Managed AWS RDS MySQL 8.0 (`db.t3.micro`) 사용 (24시간 가동 시 지속 비용 발생)
+  * **변경**: 셀프호스팅 EC2 MySQL (`t3.micro`, IP `10.0.2.33`)로 전환하여 컴퓨팅 요금 다이어트 진행
+  * **관련 작업**:
+    - `rds.tf`: RDS 리소스 주석 처리 및 코드 보관
+    - `main.tf`: `module "ec2_db"` 추가 및 `db-server.tpl` 연동
+    - `modules/user_data/db-server.tpl`: MariaDB/MySQL 자동 설치, `bind-address = 0.0.0.0`, 템플릿 변수를 통한 유저/DB 자동 생성
+* **Lambda Backend & SSM 연동 주소 변경**
+  * **기존**: `DB_HOST = aws_db_instance.db-instance.address` (RDS 엔드포인트)
+  * **변경**: `DB_HOST = module.ec2_db.private_ip` (`10.0.2.33`)로 연결 대상 변경
+* **내부 사설 DNS (`internal-dns-server.tpl`) 갱신**
+  * **기존**: 기본 DNS 레코드 관리
+  * **변경**: `db01.dev.internal` (`10.0.2.33`) 및 `bastion01.dev.internal` (`10.0.1.22`) 정방향 및 역방향(PTR) 레코드 갱신
+* **보안 그룹 (`sg.tf`) 추가**
+  * `aws_security_group.db_sg` 신규 추가 (3306 MySQL, 22 SSH, 9100 Node Exporter 허용)
+* **Promtail 로그 수집기 확장**
+  * `promtail_db_config.sh` 추가하여 EC2 DB 서버의 SSH, 시스템 및 MariaDB 로그를 Loki로 전송
+
+---
+
 ## 🏗️ 시스템 아키텍처 개요
 
 이 프로젝트를 통해 배포되는 전체 인프라 구성은 다음과 같습니다.
@@ -152,7 +175,6 @@ PersistentKeepalive = 25
 ---
 
 ## 🚀 시작하기 (How to Run)
-
 
 ### 1. 사전 준비 사항
 * **AWS CLI** 설치 및 자격 증명(Access Key/Secret Key) 구성

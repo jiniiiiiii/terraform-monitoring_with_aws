@@ -4,11 +4,12 @@ output "ec2-pub-ip" {
   #value = aws_instance.web-ec2.public_ip 
   value = {
     web_01 = module.ec2_web.public_ip
-    web_02 = module.ec2_web_02.public_ip
+    #web_02 = module.ec2_web_02.public_ip
     web_03 = module.ec2_web_03.public_ip
     monitor = module.ec2_mornitoring.public_ip
     internal_dns = module.ec2_internal_dns.public_ip
     vpn = module.ec2_vpn_wireguard.public_ip
+    db  = module.ec2_db.public_ip
   }
 }
 

@@ -43,27 +43,27 @@ module "ec2_web" {
   promtail_conf = "promtail_web_config.sh"
 }
 
-module "ec2_web_02" {
-  source           = "./modules/ec2"
+# module "ec2_web_02" {
+#   source           = "./modules/ec2"
 
-  instance_name    = "${var.project}-web_server_02" # var. 누락되었던 부분 수정
-  instance_type    = "t3.micro"
-  #ami_id           = "ami-12345678"  # 예시 AMI ID
+#   instance_name    = "${var.project}-web_server_02" # var. 누락되었던 부분 수정
+#   instance_type    = "t3.micro"
+#   #ami_id           = "ami-12345678"  # 예시 AMI ID
   
-  security_group_id = [aws_security_group.front_sg.id]  # 직접 참조
-  #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
-  subnet_id         = module.vpc.subnet-id_pub[0]
-  private_ip        = "10.0.1.11"
-  pub_ip_associate_bool = true
-  source_dest_check_bool = true
-  user_data_file    = "web-server.tpl" # /user_data/ 뒤의 파일명만 전달
+#   security_group_id = [aws_security_group.front_sg.id]  # 직접 참조
+#   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
+#   subnet_id         = module.vpc.subnet-id_pub[0]
+#   private_ip        = "10.0.1.11"
+#   pub_ip_associate_bool = true
+#   source_dest_check_bool = true
+#   user_data_file    = "web-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
-  ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  api-lambda-url    = aws_lambda_function_url.api-lambda-url.function_url # .function_url로 전달
-  target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
-  associate_alb     = true
-  promtail_conf = "promtail_web_config.sh"
-}
+#   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
+#   api-lambda-url    = aws_lambda_function_url.api-lambda-url.function_url # .function_url로 전달
+#   target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
+#   associate_alb     = true
+#   promtail_conf = "promtail_web_config.sh"
+# }
 
 module "ec2_web_03" {
   source           = "./modules/ec2"
@@ -105,7 +105,6 @@ module "ec2_mornitoring" {
   user_data_file    = "monitor-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  api-lambda-url    = aws_lambda_function_url.api-lambda-url.function_url # .function_url로 전달
   target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
   associate_alb     = false   #false 일 경우 생략 가능
   promtail_conf = "promtail_ssh_config.sh"
@@ -129,7 +128,6 @@ module "ec2_internal_dns" {
   user_data_file    = "internal-dns-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  api-lambda-url    = aws_lambda_function_url.api-lambda-url.function_url # .function_url로 전달
   target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
   associate_alb     = false   #false 일 경우 생략 가능
   promtail_conf = "promtail_dns_config.sh"
@@ -153,8 +151,34 @@ module "ec2_vpn_wireguard" {
   user_data_file    = "vpn-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  api-lambda-url    = aws_lambda_function_url.api-lambda-url.function_url # .function_url로 전달
   target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
   associate_alb     = false   #false 일 경우 생략 가능
   promtail_conf = "promtail_vpn_config.sh"
+} 
+
+/* -----  Backend-db ---- */
+module "ec2_db" {
+  source           = "./modules/ec2"
+
+  instance_name    = "${var.project}-db" 
+  instance_type    = "t3.micro" # 8기가 램
+  #ami_id           = "ami-12345678"  # 예시 AMI ID
+  
+  security_group_id = [aws_security_group.db_sg.id]  # 직접 참조
+  #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
+  subnet_id         = module.vpc.subnet-id_pub[1]
+  private_ip        = "10.0.2.33"
+  pub_ip_associate_bool = true
+  source_dest_check_bool = true
+  user_data_file    = "db-server.tpl" # /user_data/ 뒤의 파일명만 전달
+  
+  ec2-profile       = aws_iam_instance_profile.ec2-profile.name
+  target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
+
+  associate_alb     = false   #false 일 경우 생략 가능
+  promtail_conf     = "promtail_db_config.sh"
+
+  db_username       = var.db_username
+  db_password       = var.db_password
+  db_name           = var.db_name
 } 

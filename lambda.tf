@@ -27,7 +27,8 @@ resource "aws_lambda_function" "backend_lambda" {
     # 필요한 환경 변수 추가
     variables = {
         ENV                 = "dev"
-        DB_HOST             = aws_db_instance.db-instance.address   # 주소값을 사용해야하므로 address로 받아오기
+        DB_HOST             = module.ec2_db.private_ip   # EC2 DB private IP 사용
+        #DB_HOST             = aws_db_instance.db-instance.address   # rds 사용할 때 --> # 주소값을 사용해야하므로 address로 받아오기
         DB_USER             = var.db_username
         DB_NAME             = var.db_name
         DB_PASSWORD_SSM_KEY = aws_ssm_parameter.ssm_db_password.name

@@ -132,29 +132,72 @@ resource "aws_security_group" "was_sg" {
   }
 }
 
+# # ===================
+# # DB - rds
+# # ===================
+# resource "aws_security_group" "rds_sg" {
+#   name      = "${var.project}-rds_sg"
+#   vpc_id    = module.vpc.vpc_id
+
+#   ingress {
+#     from_port       = 3306
+#     to_port         = 3306
+#     protocol        = "tcp"
+#     #cidr_blocks   = [aws_security_group.ec2_sg.id] --> 보안 그룹을 지정할 때는 security_groups를 사용
+#     security_groups = [aws_security_group.was_sg.id]
+#     description     = "allow web"
+#   }
+#   egress {
+#     from_port           = 0
+#     to_port             = 0
+#     protocol            = -1
+#     cidr_blocks         = ["0.0.0.0/0"]
+#     description         = "allow internal to out"
+#   }
+# }
+
 # ===================
-# DB - rds
+# DB - ec2
 # ===================
-resource "aws_security_group" "rds_sg" {
-  name      = "${var.project}-rds_sg"
-  vpc_id    = module.vpc.vpc_id
+resource "aws_security_group" "db_sg" {
+  name        = "${var.project}-db_sg"
+  description = "${var.project}-db_sg"
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     from_port       = 3306
     to_port         = 3306
     protocol        = "tcp"
-    #cidr_blocks   = [aws_security_group.ec2_sg.id] --> 보안 그룹을 지정할 때는 security_groups를 사용
     security_groups = [aws_security_group.was_sg.id]
-    description     = "allow web"
+    cidr_blocks     = ["10.0.0.0/16"]
+    description     = "allow mysql from WAS/VPC"
   }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_public_ip]
+    description = "allow me ssh"
+  }
+
+  ingress {
+    from_port       = 9100
+    to_port         = 9100
+    protocol        = "tcp"
+    security_groups = [aws_security_group.monitor_sg.id]
+    description     = "node exporter for monitoring"
+  }
+
   egress {
-    from_port           = 0
-    to_port             = 0
-    protocol            = -1
-    cidr_blocks         = ["0.0.0.0/0"]
-    description         = "allow internal to out"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "allow internal to out"
   }
 }
+
 # ======================================
 # Monitoring - ec2
 # ======================================
