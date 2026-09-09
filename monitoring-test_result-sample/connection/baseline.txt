@@ -1,0 +1,21 @@
+[ec2-user@ip-10-0-1-10 ~]$ sudo nginx -T 2>/dev/null | grep -E 'worker_processes|worker_connections|keepalive'
+worker_processes auto;
+    worker_connections 1024;
+    keepalive_timeout   65;
+
+[ec2-user@ip-10-0-1-10 ~]$ ps -ef | grep 'nginx'
+root       25874       1  0 11:08 ?        00:00:00 nginx: master process /usr/sbin/nginx   
+nginx      25875   25874  0 11:08 ?        00:00:00 nginx: worker process
+nginx      25876   25874  0 11:08 ?        00:00:00 nginx: worker process
+ec2-user   27828   27687  0 11:11 pts/0    00:00:00 grep --color=auto nginx
+
+[ec2-user@ip-10-0-1-10 ~]$ ss -s
+Total: 153
+TCP:   14 (estab 3, closed 4, orphaned 0, timewait 4)
+
+Transport Total     IP        IPv6
+RAW       1         0         1
+UDP       5         3         2
+TCP       10        4         6
+INET      16        7         9
+FRAG      0         0         0
