@@ -19,3 +19,8 @@ UDP       5         3         2
 TCP       10        4         6
 INET      16        7         9
 FRAG      0         0         0
+
+[ec2-user@ip-10-0-1-10 ~]$ ss -ant '( sport = :80 )' | awk 'NR>1 {print $1}' | sort | uniq -
+c
+      2 LISTEN
+      4 TIME-WAIT

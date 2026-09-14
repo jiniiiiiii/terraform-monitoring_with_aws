@@ -1,4 +1,4 @@
-/*
+
 resource "aws_db_instance" "db-instance" {
     allocated_storage       = 20
     engine                  = "mysql"
@@ -20,10 +20,12 @@ resource "aws_db_subnet_group" "db_subnet_group" {
   description = "rds subnetgroup"
 
   # 서브넷을 묶어 줌
-  subnet_ids = module.vpc.subnet-id_pri
+  subnet_ids = [
+    module.subnet_pri_service_a_1.subnet_id,
+    module.subnet_pri_manage_a_2.subnet_id
+  ]
   tags = {
     Name      = "${var.project}-db-subnet_group"
     Project   = var.project
   }
 }
-*/

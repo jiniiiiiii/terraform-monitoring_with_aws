@@ -9,7 +9,10 @@ resource "aws_alb" "public_alb" {
   # vpc_security_groups_ids는 ec2 정의할 때
   
   # **서브넷 id를 넣어야 함. 대역대 넣는거 xxx
-  subnets                   = module.vpc.subnet-id_web_pub
+  subnets = [
+    module.subnet_pub_service_a_1.subnet_id,
+    module.subnet_pub_service_c_1.subnet_id
+  ]
 }
 
 # 타겟 그룹 정의 

@@ -1,3 +1,5 @@
+# 라우팅 테이블은 껍데기만 남겨두기 !! --> gw.tf로 이동했기 때문
+
 # ============= pub rt ===========
 resource "aws_route_table" "pub-rt" {
     vpc_id              = aws_vpc.main.id
@@ -19,24 +21,26 @@ resource "aws_route_table" "pub-rt" {
     }
 }
 
-resource "aws_route" "pub_default_route" {
-    route_table_id         = aws_route_table.pub-rt.id
-    destination_cidr_block = "0.0.0.0/0"
-    gateway_id             = aws_internet_gateway.igw.id
-}
+# *gw.tf에 기입*
+# resource "aws_route" "pub_default_route" {
+#     route_table_id         = aws_route_table.pub-rt.id
+#     destination_cidr_block = "0.0.0.0/0"
+#     gateway_id             = aws_internet_gateway.igw.id
+# }
 
-resource "aws_route_table_association" "pub-a-association" {
-    subnet_id           = aws_subnet.public-a-1.id
-    route_table_id   = aws_route_table.pub-rt.id  
-}
-resource "aws_route_table_association" "pub-c-association" {
-    for_each = {
-        pub_c_1 = aws_subnet.public-c-1.id
-        pub_c_2 = aws_subnet.public-c-2.id
-    }
-    subnet_id          = each.value
-    route_table_id   = aws_route_table.pub-rt.id  
-}
+# 서브넷 모듈화로 인해 서브넷 연결(association)은 modules/subnet/subnet.tf 에서 직접 수행합니다.
+# resource "aws_route_table_association" "pub-a-association" {
+#     subnet_id           = aws_subnet.public-a-1.id
+#     route_table_id   = aws_route_table.pub-rt.id  
+# }
+# resource "aws_route_table_association" "pub-c-association" {
+#     for_each = {
+#         pub_c_1 = aws_subnet.public-c-1.id
+#         pub_c_2 = aws_subnet.public-c-2.id
+#     }
+#     subnet_id          = each.value
+#     route_table_id   = aws_route_table.pub-rt.id  
+# }
 
 
 # ============= pri rt ===========
@@ -53,17 +57,19 @@ resource "aws_route_table" "pri-rt" {
       Name      = "${var.project}-pri-rt"
     }
 }
-resource "aws_route" "pri_default_route" {
-    route_table_id         = aws_route_table.pri-rt.id
-    destination_cidr_block = "0.0.0.0/0"
-    nat_gateway_id         = aws_nat_gateway.pub_nat_gw.id
-}
 
-resource "aws_route_table_association" "pri-a-association" {
-    subnet_id           = aws_subnet.private-a-1.id
-    route_table_id   = aws_route_table.pri-rt.id  
-}
-resource "aws_route_table_association" "pri-c-association" {
-    subnet_id           = aws_subnet.private-c-1.id
-    route_table_id   = aws_route_table.pri-rt.id  
-}
+# * 밖으로 빼기 
+# resource "aws_route" "pri_default_route" {
+#     route_table_id         = aws_route_table.pri-rt.id
+#     destination_cidr_block = "0.0.0.0/0"
+#     nat_gateway_id         = aws_nat_gateway.pub_nat_gw.id
+# }
+
+# resource "aws_route_table_association" "pri-a-association" {
+#     subnet_id           = aws_subnet.private-a-1.id
+#     route_table_id   = aws_route_table.pri-rt.id  
+# }
+# resource "aws_route_table_association" "pri-c-association" {
+#     subnet_id           = aws_subnet.private-c-1.id
+#     route_table_id   = aws_route_table.pri-rt.id  
+# }
