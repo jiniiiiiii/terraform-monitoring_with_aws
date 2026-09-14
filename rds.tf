@@ -22,7 +22,7 @@ resource "aws_db_subnet_group" "db_subnet_group" {
   # 서브넷을 묶어 줌
   subnet_ids = [
     module.subnet_pri_service_a_1.subnet_id,
-    module.subnet_pri_manage_a_2.subnet_id
+    module.subnet_pri_service_c_1.subnet_id
   ]
   tags = {
     Name      = "${var.project}-db-subnet_group"

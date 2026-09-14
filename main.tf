@@ -62,6 +62,15 @@ module "subnet_pri_service_a_1" {
   az             = "${var.aws_region}a"     # ap-northeast-3a
   route_table_id = module.vpc.pri_rt_id
 }
+module "subnet_pri_service_c_1" {
+  source         = "./modules/subnet"
+  project        = var.project
+  vpc_id         = module.vpc.vpc_id
+  subnet_name    = "pri-c-1_service"
+  cidr_block     = "10.0.11.0/24"
+  az             = "${var.aws_region}c"     # ap-northeast-3a
+  route_table_id = module.vpc.pri_rt_id
+}
 
 # (4) 프라이빗 - 관리용
 module "subnet_pri_manage_a_2" {                   # subnet_pri_a_1 중복 -> subnet_pri_a_2로 수정!
