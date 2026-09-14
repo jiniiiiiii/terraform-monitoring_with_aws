@@ -39,7 +39,7 @@ resource "aws_lambda_function" "backend_lambda" {
   vpc_config {
     subnet_ids = [
       module.subnet_pri_service_a_1.subnet_id,
-      module.subnet_pri_manage_a_2.subnet_id
+      module.subnet_pri_service_c_1.subnet_id
     ]
     security_group_ids = [ aws_security_group.was_sg.id ]
   }
