@@ -99,7 +99,7 @@ module "ec2_web" {
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
   subnet_id         = module.subnet_pub_service_a_1.subnet_id
   private_ip        = "10.0.1.10"
-  pub_ip_associate_bool = true
+  pub_ip_associate_bool = false
   user_data_file    = "web-server.tpl" # /user_data/ 뒤의 파일명만 전달
   source_dest_check_bool = true
   
@@ -121,7 +121,7 @@ module "ec2_web" {
 #   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
 #   subnet_id         = module.subnet_pub_service_a_1.subnet_id
 #   private_ip        = "10.0.1.11"
-#   pub_ip_associate_bool = true
+#   pub_ip_associate_bool = false
 #   source_dest_check_bool = true
 #   user_data_file    = "web-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
@@ -143,7 +143,7 @@ module "ec2_web_03" {
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
   subnet_id         = module.subnet_pub_service_c_1.subnet_id
   private_ip        = "10.0.1.150"
-  pub_ip_associate_bool = true
+  pub_ip_associate_bool = false
   source_dest_check_bool = true
   user_data_file    = "web-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
@@ -166,8 +166,8 @@ module "ec2_mornitoring" {
   security_group_id = [aws_security_group.monitor_sg.id]  # 직접 참조
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
   subnet_id         = module.subnet_pri_manage_a_2.subnet_id
-  private_ip        = "10.0.2.100"
-  pub_ip_associate_bool = true
+  private_ip        = "10.0.20.100"
+  pub_ip_associate_bool = false
   source_dest_check_bool = true
   user_data_file    = "monitor-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
@@ -188,8 +188,8 @@ module "ec2_internal_dns" {
   security_group_id = [aws_security_group.internal_dns_sg.id]  # 직접 참조
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
   subnet_id         = module.subnet_pri_manage_a_2.subnet_id
-  private_ip        = "10.0.1.53"
-  pub_ip_associate_bool = true
+  private_ip        = "10.0.20.53"
+  pub_ip_associate_bool = false
   source_dest_check_bool = true
   user_data_file    = "internal-dns-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
@@ -231,8 +231,8 @@ module "ec2_db" {
   security_group_id = [aws_security_group.db_sg.id]  # 직접 참조
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
   subnet_id         = module.subnet_pri_service_a_1.subnet_id
-  private_ip        = "10.0.2.33"
-  pub_ip_associate_bool = true
+  private_ip        = "10.0.10.33"
+  pub_ip_associate_bool = false
   source_dest_check_bool = true
   user_data_file    = "db-server.tpl" # /user_data/ 뒤의 파일명만 전달
   

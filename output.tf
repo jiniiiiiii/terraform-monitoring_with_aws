@@ -3,17 +3,30 @@ output "ec2-pub-ip" {
   description = "value"
   #value = aws_instance.web-ec2.public_ip 
   value = {
-    web_01 = module.ec2_web.public_ip
+    # web_01 = module.ec2_web.public_ip
     #web_02 = module.ec2_web_02.public_ip
-    web_03 = module.ec2_web_03.public_ip
-    monitor = module.ec2_mornitoring.public_ip
-    internal_dns = module.ec2_internal_dns.public_ip
-    vpn = module.ec2_vpn_wireguard.public_ip
-    db  = module.ec2_db.public_ip
+    # web_03 = module.ec2_web_03.public_ip
+    # monitor = module.ec2_mornitoring.public_ip
+    # internal_dns = module.ec2_internal_dns.public_ip
+    # vpn = module.ec2_vpn_wireguard.public_ip
+    # db  = module.ec2_db.public_ip
+    bastion = module.ec2_bastion.public_ip
   }
 }
 
-
+output "ec2-pri-ip" {
+  description = "server's private ip"
+  value = {
+    web_01 = module.ec2_web.private_ip
+    #web_02 = module.ec2_web_02.private_ip
+    web_03 = module.ec2_web_03.private_ip
+    monitor = module.ec2_mornitoring.private_ip
+    internal_dns = module.ec2_internal_dns.private_ip
+    vpn = module.ec2_vpn_wireguard.private_ip
+    db  = module.ec2_db.private_ip
+    bastion = module.ec2_bastion.private_ip
+  }
+}
 
 # 이름 문제인가? 
 # output "function_url" {
@@ -30,7 +43,8 @@ output "alb_url" {
 }
 
 
-output "monitor_url" {
-  description = "URL of MONITOR URL"
-  value       = "http://${module.ec2_mornitoring.public_ip}:3000"
-}
+# 흠... 모니터링 서버 같은 경우엔 어떻게 하징.. 
+# output "monitor_url" {
+#   description = "URL of MONITOR URL"
+#   value       = "http://${module.ec2_mornitoring.public_ip}:3000"
+# }
