@@ -4,6 +4,51 @@
 
 ---
 
+## 📌 [2026-09-15] - Bastion 점프 호스트 구축, 2계층 서브넷 분리(Service/Manage) 및 모니터링 보안 강화
+
+### 🎯 변경 목적 및 배경
+1. **내부 서버 보안 격리**: DB, Monitoring(Grafana/Prometheus/Loki), Internal DNS 서버를 프라이빗 서브넷으로 완전 격리하고 Public IP 할당을 차단하여 외부 직접 공격 표면을 원천 차단.
+2. **Bastion Host (Jump Box) 도입**: 프라이빗 자원에 대한 안전한 중앙 집중식 관리 및 SSH 접근 경로 단일화.
+3. **보안 그룹 순환 참조(Cycle Dependency) 해소**: `bastion_sg`와 `monitor_sg` 간의 상호 참조로 인한 테라폼 빌드 오류 해결.
+4. **운영 자동화 도구 고도화**: ProxyJump 및 ssh-agent 기반의 원클릭 서버 접속 유틸리티(`ssh-login.sh`) 구축.
+
+---
+
+### 📝 상세 변경 내역 (Keep a Changelog)
+
+#### Added (신규 추가)
+* **Bastion EC2 및 보안 그룹 구축**:
+  * `main.tf`: `module.ec2_bastion` 추가 (`t3.micro`, 퍼블릭 관리 서브넷 `10.0.2.22` 할당)
+  * `modules/user_data/bastion-server.tpl`: Bastion 기본 환경 설정 및 DNS 리졸버 설정 템플릿 생성
+  * `sg.tf`: `aws_security_group.bastion_sg` 생성 (내 공인 IP로부터 22번 SSH 허용)
+* **서브넷 모듈 출력 확장**:
+  * `modules/subnet/outputs.tf`: `output "cidr_block"` 및 `output "cidr_blocks"` 추가로 보안그룹에서 서브넷 대역 동적 참조 지원
+* **운영 및 접속 스크립트 고도화**:
+  * `manage-script/ssh-login.sh` / `script/ssh-login.sh`: Bastion 공인 IP 및 대상 서버 사설 IP 자동 추출, `ssh-agent` 자동 활성화, ProxyJump(`-J`) 분기 접속 로직 구현
+  * `manage-script/info.md`: 관리 스크립트 상세 설명 및 매뉴얼 작성
+
+#### Changed (변경)
+* **인프라 계층 구조 재배치 (Service Layer / Manage Layer)**:
+  * **Service Layer**:
+    * Public Subnet (`10.0.1.0/25`, `10.0.1.128/25`): ALB, `ec2_web_01` (`10.0.1.10`), `ec2_web_03` (`10.0.1.150`)
+    * Private Subnet (`10.0.10.0/24`): `ec2_db` (`10.0.10.33`)
+  * **Manage Layer**:
+    * Public Subnet (`10.0.2.0/24`): `ec2_vpn_wireguard`, `ec2_bastion` (`10.0.2.22`)
+    * Private Subnet (`10.0.20.0/24`): `ec2_mornitoring` (`10.0.20.100`), `ec2_internal_dns` (`10.0.20.53`)
+* **Public IP 할당 비활성화**:
+  * 내부 서버(`ec2_web_01`, `ec2_web_03`, `ec2_db`, `ec2_mornitoring`, `ec2_internal_dns`)의 `pub_ip_associate_bool`을 `false`로 설정하여 사설망 전용으로 전환
+* **`output.tf` 갱신**:
+  * `ec2-pub-ip`: Bastion 공인 IP 출력
+  * `ec2-pri-ip` [신규]: 전체 서버들의 내부 통신용 사설 IP 일괄 출력 매핑 추가
+
+#### Fixed (문제 해결 & 기술적 개선)
+1. **`Cycle: aws_security_group.monitor_sg, aws_security_group.bastion_sg` 오류 해결**:
+   * 모니터링 수집 포트(9100)의 인바운드 대역을 `security_groups = [aws_security_group.monitor_sg.id]`에서 **`cidr_blocks = [ module.subnet_pri_manage_a_2.cidr_block ]` (프라이빗 관리 서브넷)**으로 변경하여 순환 종속성을 해소하고 보안 최소 권한 원칙 충족.
+2. **보안 그룹 내 리소스 ID 참조 오타 수정**:
+   * `security_groups = [ aws_security_group.bastion_sg ]` 형태의 누락된 `.id` 속성을 `[ aws_security_group.bastion_sg.id ]`로 일괄 수정.
+
+---
+
 ## 📌 [2026-09-14] - 서브넷 모듈화, 게이트웨이 분리 및 의존성 최적화
 
 ### 🎯 변경 목적 및 배경
