@@ -67,7 +67,7 @@ resource "aws_security_group" "front_sg" {
     from_port           = 22
     to_port             = 22
     protocol            = "tcp"
-    security_groups = [ aws_security_group.bastion_sg ]
+    security_groups     = [ aws_security_group.bastion_sg.id ]
     #cidr_blocks         = [var.my_public_ip]
     description         = "allow me"
   } 
@@ -86,7 +86,7 @@ resource "aws_security_group" "front_sg" {
     from_port           = 9100
     to_port             = 9100
     protocol            = "tcp"
-    security_groups     = [ aws_security_group.monitor_sg.id ] #모니터링을 위한 규칙 추가
+    cidr_blocks         = [ module.subnet_pri_manage_a_2.cidr_block ] # 관리 서브넷(모니터링) 허용
     description         = "node exporter"
   } 
 
@@ -187,19 +187,19 @@ resource "aws_security_group" "db_sg" {
   }
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    security_groups = [ aws_security_group.bastion_sg ]
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [ aws_security_group.bastion_sg.id ]
     #cidr_blocks = [var.my_public_ip]
-    description = "allow me ssh"
+    description     = "allow me ssh"
   }
 
   ingress {
     from_port       = 9100
     to_port         = 9100
     protocol        = "tcp"
-    security_groups = [aws_security_group.monitor_sg.id]
+    cidr_blocks     = [ module.subnet_pri_manage_a_2.cidr_block ]
     description     = "node exporter for monitoring"
   }
 
@@ -223,7 +223,7 @@ resource "aws_security_group" "monitor_sg" {
     from_port       = 22  
     to_port         = 22
     protocol        = "tcp"
-    security_groups = [ aws_security_group.bastion_sg ] #--> 보안 그룹을 지정할 때는 security_groups를 사용
+    security_groups = [ aws_security_group.bastion_sg.id ] #--> 보안 그룹을 지정할 때는 security_groups를 사용
     #cidr_blocks = [var.my_public_ip]  # 보안그룹 적을 땐 security_groups
     description     = "allow me ssh"
   }
@@ -310,7 +310,7 @@ resource "aws_security_group" "internal_dns_sg" {
     from_port           = 9100
     to_port             = 9100
     protocol            = "tcp"
-    security_groups     = [ aws_security_group.monitor_sg.id ] #모니터링을 위한 규칙 추가
+    cidr_blocks         = [ module.subnet_pri_manage_a_2.cidr_block ]
     description         = "node exporter"
   } 
   # icmp용 --> 추후 주석처리 가능. 
@@ -363,7 +363,7 @@ resource "aws_security_group" "vpn_sg" {
     from_port           = 9100
     to_port             = 9100
     protocol            = "tcp"
-    security_groups     = [ aws_security_group.monitor_sg.id ] #모니터링을 위한 규칙 추가
+    cidr_blocks         = [ module.subnet_pri_manage_a_2.cidr_block ]
     description         = "node exporter"
   } 
 
@@ -416,7 +416,8 @@ resource "aws_security_group" "bastion_sg" {
     from_port           = 9100
     to_port             = 9100
     protocol            = "tcp"
-    security_groups     = [ aws_security_group.monitor_sg.id ] #모니터링을 위한 규칙 추가
+    cidr_blocks         = [ module.subnet_pri_manage_a_2.cidr_block ]    #subnet/outputs.tf에 설정 필요
+    #security_groups     = [ aws_security_group.monitor_sg.id ] #모니터링을 위한 규칙 추가
     description         = "node exporter"
   } 
   
