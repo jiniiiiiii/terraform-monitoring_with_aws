@@ -165,14 +165,13 @@ module "ec2_mornitoring" {
   
   security_group_id = [aws_security_group.monitor_sg.id]  # 직접 참조
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
-  subnet_id         = module.subnet_pub_manage_a_2.subnet_id
+  subnet_id         = module.subnet_pri_manage_a_2.subnet_id
   private_ip        = "10.0.2.100"
   pub_ip_associate_bool = true
   source_dest_check_bool = true
   user_data_file    = "monitor-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
   associate_alb     = false   #false 일 경우 생략 가능
   promtail_conf = "promtail_ssh_config.sh"
 } 
@@ -188,20 +187,19 @@ module "ec2_internal_dns" {
   
   security_group_id = [aws_security_group.internal_dns_sg.id]  # 직접 참조
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
-  subnet_id         = module.subnet_pub_service_a_1.subnet_id
+  subnet_id         = module.subnet_pri_manage_a_2.subnet_id
   private_ip        = "10.0.1.53"
   pub_ip_associate_bool = true
   source_dest_check_bool = true
   user_data_file    = "internal-dns-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
   associate_alb     = false   #false 일 경우 생략 가능
   promtail_conf = "promtail_dns_config.sh"
 } 
 
 
-/* -----  VPN - WireGuard ---- */
+/* ------------  VPN - WireGuard ----------- */
 module "ec2_vpn_wireguard" {
   source           = "./modules/ec2"
 
@@ -218,7 +216,6 @@ module "ec2_vpn_wireguard" {
   user_data_file    = "vpn-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
   associate_alb     = false   #false 일 경우 생략 가능
   promtail_conf = "promtail_vpn_config.sh"
 } 
@@ -233,14 +230,13 @@ module "ec2_db" {
   
   security_group_id = [aws_security_group.db_sg.id]  # 직접 참조
   #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
-  subnet_id         = module.subnet_pub_manage_a_2.subnet_id
+  subnet_id         = module.subnet_pri_service_a_1.subnet_id
   private_ip        = "10.0.2.33"
   pub_ip_associate_bool = true
   source_dest_check_bool = true
   user_data_file    = "db-server.tpl" # /user_data/ 뒤의 파일명만 전달
   
   ec2-profile       = aws_iam_instance_profile.ec2-profile.name
-  target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
 
   associate_alb     = false   #false 일 경우 생략 가능
   promtail_conf     = "promtail_db_config.sh"
@@ -248,4 +244,25 @@ module "ec2_db" {
   db_username       = var.db_username
   db_password       = var.db_password
   db_name           = var.db_name
+} 
+
+/* -----  Bastion - ssh  ---- */
+module "ec2_bastion" {
+  source           = "./modules/ec2"
+
+  instance_name    = "${var.project}-bastion" 
+  instance_type    = "t3.micro" # 8기가 램
+  #ami_id           = "ami-12345678"  # 예시 AMI ID
+  
+  security_group_id = [aws_security_group.bastion_sg.id]  # 직접 참조
+  #security_group_id = module.security_group.security_group_id # 모듈 사용하는 경우
+  subnet_id         = module.subnet_pub_manage_a_2.subnet_id
+  private_ip        = "10.0.2.22"
+  pub_ip_associate_bool = true
+  source_dest_check_bool = false
+  user_data_file    = "bastion-server.tpl" # /user_data/ 뒤의 파일명만 전달
+  
+  ec2-profile       = aws_iam_instance_profile.ec2-profile.name
+  associate_alb     = false   #false 일 경우 생략 가능
+  promtail_conf = "promtail_bastion_config.sh"    # 설정 변경 필요
 } 

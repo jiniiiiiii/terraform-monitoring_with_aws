@@ -98,7 +98,7 @@ resource "aws_instance" "ec2" {
 # ===============================================================
 resource "aws_alb_target_group_attachment" "pub_alb_tg_attach" {
   # target_group_arn이 입력되었을 때만 연결 리소스를 생성
-  count = var.associate_alb ? 1:0   #공백이 아니고, 1부터 0까지의 수로 시작할 때
+  count = var.associate_alb ? 1:0   #공백이 아니고, 1부터 0까지의 수로 시작할 때  --> true일 때만 리소스 생성 됨. 
   
   #target_group_arn  = aws_alb_target_group.pub_alb_tg.arn
   target_group_arn  = var.target_group_arn
