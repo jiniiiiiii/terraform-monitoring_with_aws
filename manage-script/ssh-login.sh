@@ -26,6 +26,8 @@ user=${user:-ec2-user} # 엔터만 치면 기본값 ec2-user 사용
 read -p "ServerName (예: bastion, web01, web03, db, monitor, internal_dns, vpn): " server_name
 echo "----------------------------------------"
 # 4. Bastion 공인 IP 추출
+# 모든 서버는 bastion을 통해 경유해야 하므로, bastion의 ip를 추출함. 
+echo "bastion IP 를 추출합니다. "
 BASTION_IP=$(terraform -chdir="$DEV_DIR" output -json ec2-pub-ip | sed -n 's/.*"bastion":"\([^"]*\)".*/\1/p')
 
 if [ -z "$BASTION_IP" ]; then

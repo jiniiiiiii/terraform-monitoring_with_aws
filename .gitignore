@@ -33,3 +33,4 @@ crash.log
 
 # aws-env 금지 
 aws-env.sh
+practice.sh
